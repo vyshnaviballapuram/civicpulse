@@ -1,0 +1,202 @@
+================================================================================
+                       CIVICPULSE PROJECT REPORT
+           Municipal Civic Grievance & Issue Resolution Portal
+================================================================================
+
+1. PROJECT OVERVIEW
+--------------------------------------------------------------------------------
+Project Name        : CivicPulse
+Project Type        : Full-Stack Web Application (SPA + REST API)
+Architecture        : Client-Server Architecture
+Target Audience     : Citizens (Grievance Submission & Tracking) and
+                      Municipal Officers / Admins (Resolution & Management)
+Primary Objective   : Bridge the gap between citizens and municipal authorities
+                      by streamlining civic issue reporting, categorization,
+                      tracking, and resolution workflow.
+
+
+2. TECHNOLOGY STACK
+--------------------------------------------------------------------------------
+FRONTEND:
+  - Framework       : React 19 (Vite Build Tool)
+  - Routing         : React Router DOM v7
+  - Icons           : React Icons (FontAwesome / Lucide set)
+  - Styling         : Modern Vanilla CSS with CSS Variables, Flexbox, & Grid
+  - API Client      : Native Fetch API & Axios
+
+BACKEND:
+  - Runtime         : Node.js
+  - Framework       : Express.js 5.x
+  - Database Driver : MongoDB Native Driver (v7.x)
+  - Authentication  : JSON Web Tokens (jsonwebtoken) & bcryptjs
+  - Middleware      : CORS, Express JSON parser, Dotenv
+  - Resiliency      : In-memory DB fallback mechanism if MongoDB Atlas is offline
+
+
+3. SYSTEM ARCHITECTURE & RESILIENCE
+--------------------------------------------------------------------------------
+- Dual-Role Access Control:
+    1. Citizen Role ('user'): Can register, log in, view personal complaints,
+       and submit new issues across categories (Roads, Water, Garbage, Electricity, etc.).
+    2. Municipal Officer Role ('admin'): Can log in using Officer ID & Department,
+       view system-wide complaints, and update grievance statuses.
+
+- Hybrid Database Resiliency:
+    The backend features an automated fallback strategy. It attempts to connect to
+    MongoDB Atlas. If connection parameters are unconfigured or database connection
+    times out, it seamlessly switches to an in-memory datastore, allowing zero-downtime
+    local development, testing, and continuous operations.
+
+
+4. CORE FEATURES & MODULES
+--------------------------------------------------------------------------------
+A. CITIZEN PORTAL
+   - Interactive Landing Page with Hero, About, Services, How It Works, Features,
+     Statistics, and Contact sections.
+   - Quick Grievance Filing Modal directly accessible from any section.
+   - Public Complaint Tracker (Quick status lookup by ID).
+   - Citizen Dashboard:
+       * Overview tab with metrics (Total, Pending, In-Progress, Resolved).
+       * My Complaints tab with filtered list and urgency tags.
+       * File New Complaint tab with form fields (Title, Category, Urgency,
+         Location, Description).
+
+B. MUNICIPAL ADMIN PORTAL
+   - Admin Authentication tab with Officer ID & Department selection.
+   - Admin Management Dashboard:
+       * Real-time metrics across all submitted civic complaints.
+       * Status transition controls (Pending -> In-Progress -> Resolved).
+       * Filter and search capabilities by status and category.
+
+C. SECURITY & AUTHENTICATION
+   - Passwords hashed using bcrypt salt (10 rounds).
+   - JWT-based authentication bearer tokens (1-day expiration).
+   - Authorization headers required for protected endpoints (/api/complaints).
+
+
+5. BACKEND API ENDPOINTS
+--------------------------------------------------------------------------------
+Auth Routes:
+  - POST /api/auth/register
+      Payload: { name, email, phone, password }
+      Action : Registers a new citizen user.
+
+  - POST /api/auth/login
+      Payload: { email, password, role, officerId, department }
+      Action : Authenticates user/admin and issues JWT token.
+
+User Routes:
+  - GET /api/user/profile
+      Header : Authorization: Bearer <token>
+      Action : Returns authenticated user details.
+
+Complaint Routes:
+  - POST /api/complaints
+      Header : Authorization: Bearer <token>
+      Payload: { title, category, description, location, urgency }
+      Action : Submits a new grievance.
+
+  - GET /api/complaints
+      Header : Authorization: Bearer <token>
+      Action : Fetches complaints (user's complaints for citizens, all for admins).
+
+  - PATCH /api/complaints/:id/status
+      Header : Authorization: Bearer <token>
+      Payload: { status: "pending" | "in-progress" | "resolved" }
+      Action : Updates status of a complaint (Admin access required).
+
+
+6. DATABASE SCHEMA & DATA MODELS
+--------------------------------------------------------------------------------
+A. User Model (`users` collection)
+   {
+     _id         : ObjectId / String,
+     name        : String,
+     email       : String (Unique index),
+     phone       : String,
+     password    : String (bcrypt hashed),
+     role        : "user" | "admin",
+     officerId   : String (for admin),
+     department  : String (for admin),
+     createdAt   : Date
+   }
+
+B. Complaint Model (`complaints` collection)
+   {
+     _id         : ObjectId / String,
+     title       : String,
+     category    : String ("roads" | "water" | "electricity" | "garbage" | etc.),
+     description : String,
+     location    : String,
+     urgency     : String ("Low" | "Medium" | "High" | "Critical"),
+     status      : String ("pending" | "in-progress" | "resolved"),
+     userId      : String,
+     userName    : String,
+     createdAt   : Date
+   }
+
+
+7. FRONTEND COMPONENT STRUCTURE
+--------------------------------------------------------------------------------
+frontend/src/
+  ├── App.jsx                 # Master application controller & state manager
+  ├── main.jsx                # Entry point rendering React DOM
+  ├── index.css & App.css     # Global theme, variables, dark mode aesthetics
+  ├── pages/
+  │   ├── Home.jsx            # Landing page assembling sub-components & modals
+  │   ├── Dashboard.jsx       # Citizen & Admin portal interface
+  │   ├── Login.jsx           # Standalone login handler
+  │   └── Register.jsx        # Standalone registration handler
+  └── components/
+      ├── Navbar.jsx          # Top navigation bar with action buttons
+      ├── Hero.jsx            # Call-to-action hero banner
+      ├── About.jsx           # CivicPulse mission statement
+      ├── Services.jsx        # Grid of complaint categories
+      ├── HowItWorks.jsx      # 3-step reporting explanation
+      ├── Features.jsx        # Platform capabilities highlights
+      ├── Statistics.jsx      # Live counter animation for resolved issues
+      ├── Contact.jsx         # Emergency contact directory & support form
+      ├── Footer.jsx          # Municipal footer links & legal info
+      ├── AuthModal.jsx       # Tabbed Login / Register modal
+      └── ComplaintModal.jsx  # File & track complaint modal
+
+
+8. PROJECT EXECUTION & RUNNING INSTRUCTIONS
+--------------------------------------------------------------------------------
+A. Prerequisites:
+   - Node.js (v18+)
+   - npm (v9+)
+
+B. Backend Setup:
+   1. Open terminal in `./backend` directory.
+   2. Environment Configuration (`.env`):
+        PORT=5000
+        MONGODB_URI=<your_mongodb_connection_string>
+        JWT_SECRET=<your_jwt_secret>
+   3. Run Backend Server:
+        node index.js
+
+C. Frontend Setup:
+   1. Open terminal in `./frontend` directory.
+   2. Run Development Server:
+        npm run dev
+   3. Access application in browser at:
+        http://localhost:5173/
+
+
+9. SUMMARY & FUTURE ENHANCEMENTS
+--------------------------------------------------------------------------------
+Summary:
+  CivicPulse provides a complete, modern, resilient civic grievance management system.
+  It enables transparent issue tracking between citizens and municipal authorities with
+  an aesthetic user interface and fail-safe server architecture.
+
+Future Enhancements:
+  1. Photo / Document Attachment uploads via Cloudinary / AWS S3.
+  2. Geographic GIS Mapping integration (Leaflet / Google Maps) for geolocation pinning.
+  3. Real-time SMS & Email status updates using Nodemailer / Twilio.
+  4. Analytics Dashboard with heatmaps for municipal decision-makers.
+
+================================================================================
+                       REPORT GENERATED SUCCESSFULLY
+================================================================================

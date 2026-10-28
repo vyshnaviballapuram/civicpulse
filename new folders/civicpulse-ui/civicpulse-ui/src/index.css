@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Navy scale — dark sidebars (Admin/Officer) */
+  --color-navy-950: #0a1122;
+  --color-navy-900: #0d1b34;
+  --color-navy-800: #122544;
+  --color-navy-700: #182f56;
+  --color-navy-600: #1e3a6b;
+
+  /* Brand blue — headers, primary actions, active nav */
+  --color-brand-50:  #eaf0fd;
+  --color-brand-100: #d3e0fb;
+  --color-brand-500: #2f5fda;
+  --color-brand-600: #2952c4;
+  --color-brand-700: #1e3f99;
+  --color-brand-800: #16305e;
+  --color-brand-900: #101f3d;
+
+  /* Status colors */
+  --color-status-pending-bg: #fef3c7;
+  --color-status-pending-text: #92400e;
+  --color-status-progress-bg: #ede9fe;
+  --color-status-progress-text: #5b21b6;
+  --color-status-resolved-bg: #d1fae5;
+  --color-status-resolved-text: #065f46;
+  --color-status-rejected-bg: #fee2e2;
+  --color-status-rejected-text: #991b1b;
+
+  --color-surface: #f4f6fb;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-surface);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(15, 23, 42, 0.18);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

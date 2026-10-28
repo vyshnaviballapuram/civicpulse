@@ -1,0 +1,9 @@
+﻿.env
+__pycache__/
+*.pyc
+.vscode/
+hs_err_pid*.log
+replay_pid*.log
+venv/
+.venv/
+node_modules/
